@@ -1,0 +1,386 @@
+-- DROP DATABASE IF EXISTS BDCURSO;
+CREATE DATABASE BDCURSO;
+USE BDCURSO;
+
+CREATE TABLE municipios (
+	MUN_CODIGO INT(4) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    MUN_NOME VARCHAR(100) NOT NULL,
+    MUN_UF_ESTADO CHAR(2) NOT NULL,
+    MUN_CEP VARCHAR(8)
+);
+
+INSERT INTO municipios (MUN_NOME, MUN_UF_ESTADO, MUN_CEP) VALUES
+('Rio Branco', 'AC', '69900000'),
+('Cruzeiro do Sul', 'AC', '69980000'),
+('Senador Guiomard', 'AC', '69922000'),
+('Plácido de Castro', 'AC', '69930000'),
+('Epitaciolândia', 'AC', '69940000');
+
+CREATE TABLE clientes (
+	CLI_CODIGO INT(5) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    CLI_MUN_CODIGO INT(4) NOT NULL,
+    CLI_NOME VARCHAR(50) NOT NULL,
+    CLI_DATA_NASCIMENTO DATE NOT NULL,
+    CLI_SEXO CHAR(1),    
+    CLI_CPF VARCHAR(11),
+    CLI_RG VARCHAR(20),
+    CLI_CNPJ VARCHAR(14),
+    CLI_ENDERECO VARCHAR(100),
+    CLI_EMAIL VARCHAR(50),
+    CLI_DATA_CADASTRO DATE,
+    CLI_TIPO CHAR(1),
+    CLI_STATUS CHAR(1),
+    CLI_FONE VARCHAR(20),
+    CLI_NOME_CONTATO VARCHAR(50),
+    FOREIGN KEY (CLI_MUN_CODIGO) REFERENCES MUNICIPIOS(MUN_CODIGO)
+);
+
+INSERT INTO clientes (CLI_MUN_CODIGO, CLI_NOME, CLI_DATA_NASCIMENTO, CLI_SEXO, CLI_CPF, CLI_RG, CLI_CNPJ, CLI_ENDERECO, CLI_EMAIL, CLI_DATA_CADASTRO, CLI_TIPO, CLI_STATUS, CLI_FONE, CLI_NOME_CONTATO) VALUES
+(1, 'Carlos Silva', '1985-04-12', 'M', '12345678901', '1234567', NULL, 'Rua A, 123', 'carlos@example.com', '2023-01-10', 'F', 'A', '999999999', 'Maria Silva'),
+(2, 'Ana Souza', '1990-07-25', 'F', '10987654321', '7654321', NULL, 'Rua B, 456', 'ana@example.com', '2023-02-15', 'F', 'A', '888888888', 'João Souza'),
+(3, 'Pedro Oliveira', '1988-11-30', 'M', '23456789012', '2345678', NULL, 'Rua C, 789', 'pedro@example.com', '2023-03-20', 'F', 'A', '777777777', 'Paula Oliveira'),
+(1, 'Mariana Costa', '1995-09-05', 'F', '34567890123', '3456789', NULL, 'Rua D, 321', 'mariana@example.com', '2023-04-12', 'F', 'A', '666666666', 'Lucas Costa'),
+(2, 'José Santos', '1980-02-14', 'M', '45678901234', '4567890', NULL, 'Rua E, 654', 'jose@example.com', '2023-05-25', 'F', 'A', '555555555', 'Laura Santos');
+
+CREATE TABLE fornecedores (
+	FOR_CODIGO INT(5) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    FOR_MUN_CODIGO INT(4) NOT NULL,
+    FOR_RAZAO_SOCIAL VARCHAR(100) NOT NULL,
+    FOR_NOME_FANTASIA VARCHAR(50) NOT NULL,
+    FOR_NOME_CONTATO VARCHAR(50) NOT NULL,
+    FOR_CNPJ VARCHAR(100) NOT NULL,
+    FOR_ENDERECO VARCHAR(100),
+    FOR_DATA_CADASTRO DATE,
+    FOR_FONE VARCHAR(20),
+    FOR_EMAIL VARCHAR(50),
+    FOR_WEBSITE VARCHAR(100),
+    FOREIGN KEY (FOR_MUN_CODIGO) REFERENCES municipios(MUN_CODIGO)
+);
+
+INSERT INTO fornecedores (FOR_MUN_CODIGO, FOR_RAZAO_SOCIAL, FOR_NOME_FANTASIA, FOR_NOME_CONTATO, FOR_CNPJ, FOR_ENDERECO, FOR_DATA_CADASTRO, FOR_FONE, FOR_EMAIL, FOR_WEBSITE) VALUES
+(1, 'Fornecedor A LTDA', 'Fornecedor A', 'Carlos Almeida', '12345678000195', 'Av. Central, 100', '2023-01-15', '999900000', 'fornecedorA@example.com', 'www.fornecedorA.com'),
+(2, 'Fornecedor B S/A', 'Fornecedor B', 'Ana Pereira', '23456789000196', 'Av. Brasil, 200', '2023-02-20', '888800000', 'fornecedorB@example.com', 'www.fornecedorB.com'),
+(3, 'Fornecedor C ME', 'Fornecedor C', 'Pedro Costa', '34567890000197', 'Av. São Paulo, 300', '2023-03-10', '777700000', 'fornecedorC@example.com', 'www.fornecedorC.com'),
+(4, 'Fornecedor D EIRELI', 'Fornecedor D', 'Mariana Lima', '45678901000198', 'Av. Rio de Janeiro, 400', '2023-04-18', '666600000', 'fornecedorD@example.com', 'www.fornecedorD.com'),
+(5, 'Fornecedor E LTDA', 'Fornecedor E', 'José Santos', '56789012000199', 'Av. Amazonas, 500', '2023-05-25', '555500000', 'fornecedorE@example.com', 'www.fornecedorE.com');
+
+CREATE TABLE categoria_produtos (
+	CAT_CODIGO INT(3) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    CAT_IDENTIFICADOR VARCHAR(4),
+    CAT_DESCRICAO VARCHAR(100) NOT NULL
+);
+
+INSERT INTO categoria_produtos (CAT_IDENTIFICADOR, CAT_DESCRICAO) VALUES
+('CAT1', 'Eletrônicos'),
+('CAT2', 'Móveis'),
+('CAT3', 'Roupas'),
+('CAT4', 'Alimentos'),
+('CAT5', 'Brinquedos');
+
+CREATE TABLE produtos (
+	PRO_CODIGO INT(5) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    PRO_FOR_CODIGO INT(5) NOT NULL,
+    PRO_CAT_CODIGO INT(3) NOT NULL,
+    PRO_DESCRICAO VARCHAR(100) NOT NULL,
+    PRO_QTD_DISPONIVEL INT(5),
+    PRO_ULTIMA_AQUISICAO DATE,
+    PRO_VALOR_UNIT FLOAT,
+    PRO_FABRICANTE VARCHAR(50),
+    PRO_DETALHES TEXT,
+    FOREIGN KEY (PRO_FOR_CODIGO) REFERENCES fornecedores(FOR_CODIGO),
+    FOREIGN KEY (PRO_CAT_CODIGO) REFERENCES categoria_produtos(CAT_CODIGO)
+);
+
+INSERT INTO produtos (PRO_FOR_CODIGO, PRO_CAT_CODIGO, PRO_DESCRICAO, PRO_QTD_DISPONIVEL, PRO_ULTIMA_AQUISICAO, PRO_VALOR_UNIT, PRO_FABRICANTE, PRO_DETALHES) VALUES
+(1, 1, 'Smartphone XYZ', 50, '2023-09-01', 999.99, 'Fabricante A', 'Smartphone com tela de 6.5"'),
+(2, 2, 'Sofá Comfort', 20, '2023-08-15', 1499.99, 'Fabricante B', 'Sofá de 3 lugares'),
+(3, 3, 'Camisa Polo', 100, '2023-09-10', 79.99, 'Fabricante C', 'Camisa 100% algodão'),
+(4, 4, 'Cesta de Frutas', 30, '2023-09-05', 49.99, 'Fabricante D', 'Cesta com frutas sortidas'),
+(5, 5, 'Boneca de Pano', 40, '2023-08-25', 39.99, 'Fabricante E', 'Boneca feita à mão');
+
+CREATE TABLE atendentes (
+	ATE_CODIGO INT(5) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    ATE_NOME VARCHAR(50) NOT NULL,
+    ATE_ULTIMO_ACESSO DATE NOT NULL,
+    ATE_RAMAL VARCHAR(4),
+    ATE_EMAIL VARCHAR(50),
+    ATE_PERFIL CHAR(1) NOT NULL,
+	ATE_STATUS CHAR(1)
+);
+
+INSERT INTO atendentes (ATE_NOME, ATE_ULTIMO_ACESSO, ATE_RAMAL, ATE_EMAIL, ATE_PERFIL, ATE_STATUS) VALUES
+('Ricardo Gomes', '2023-09-24', '1001', 'ricardo@example.com', '0', 'A'),
+('Juliana Dias', '2023-09-22', '1002', 'juliana@example.com', '2', 'S'),
+('Fernando Alves', '2023-09-20', '1003', 'fernando@example.com', '1', 'I'),
+('Larissa Silva', '2023-09-18', '1004', 'larissa@example.com', '2', 'S'),
+('Carlos Lima', '2023-09-16', '1005', 'carlos@example.com', '0', 'A');
+
+CREATE TABLE bancos (
+	BAN_CODIGO INT(3) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+	BAN_NOME VARCHAR(50) NOT NULL
+);
+
+INSERT INTO bancos (BAN_CODIGO, BAN_NOME) VALUES
+('006', 'Banco da Alemanha'),
+('008','Utaí'),
+('010','Bradoque'),
+('012','Caixa Gastona'),
+('023','Senado');
+
+CREATE TABLE vendas (
+	VEN_CODIGO INT(5) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    VEN_CLI_CODIGO INT(5) NOT NULL,
+    VEN_ATE_CODIGO INT(3) NOT NULL,
+    VEN_BAN_CODIGO INT(3) NOT NULL,
+    VEN_VALOR_TOTAL FLOAT NOT NULL,
+    VEN_FORMA_PAGAMENTO CHAR(1),
+    VEN_OBSERVACOES VARCHAR(200),
+    FOREIGN KEY (VEN_CLI_CODIGO) REFERENCES clientes(CLI_CODIGO),
+    FOREIGN KEY (VEN_ATE_CODIGO) REFERENCES atendentes(ATE_CODIGO),
+    FOREIGN KEY (VEN_BAN_CODIGO) REFERENCES bancos(BAN_CODIGO)
+);
+
+INSERT INTO vendas (VEN_CLI_CODIGO, VEN_ATE_CODIGO, VEN_BAN_CODIGO, VEN_VALOR_TOTAL, VEN_FORMA_PAGAMENTO, VEN_OBSERVACOES) VALUES
+(1, 1, 1, 999.99, 'C', 'Venda do smartphone'),
+(2, 2, 2, 1499.99, 'D', 'Venda do sofá'),
+(3, 3, 3, 79.99, 'C', 'Venda da camisa'),
+(4, 4, 4, 49.99, 'D', 'Venda da cesta de frutas'),
+(5, 5, 5, 39.99, 'C', 'Venda da boneca');
+
+CREATE TABLE hist_vendas (
+	HVE_VEN_CODIGO INT(5) NOT NULL,
+    HVE_PRO_CODIGO INT(5) NOT NULL,
+    HVE_DATA_VENDA DATE NOT NULL,
+    HVE_DATA_RECEBIMENTO DATE,
+    HVE_QNT_ITENS INT(5),
+    FOREIGN KEY (HVE_VEN_CODIGO) REFERENCES vendas(VEN_CODIGO),
+    FOREIGN KEY (HVE_PRO_CODIGO) REFERENCES produtos(PRO_CODIGO)
+);
+
+INSERT INTO hist_vendas (HVE_VEN_CODIGO, HVE_PRO_CODIGO, HVE_DATA_VENDA, HVE_DATA_RECEBIMENTO, HVE_QNT_ITENS) VALUES
+(1, 1, '2023-09-24', NULL, 1),
+(2, 2, '2023-09-22', NULL, 1),
+(3, 3, '2023-09-20', NULL, 1),
+(4, 4, '2023-09-18', NULL, 1),
+(5, 5, '2023-09-16', NULL, 1);
+
+CREATE TABLE tipo_mensagens (
+	TMS_CODIGO INT(3) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    TMS_DESCRICAO VARCHAR(50) NOT NULL
+);
+
+INSERT INTO tipo_mensagens (TMS_DESCRICAO) VALUES
+('Mensagem de Informação'),
+('Mensagem de Alerta'),
+('Mensagem de Erro'),
+('Mensagem de Sucesso'),
+('Mensagem de Notificação');
+
+CREATE TABLE mensagens (
+	MEN_CODIGO INT(5) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    MEN_ATE_CODIGO INT(3) NOT NULL,
+    MEN_TMS_CODIGO INT(3) NOT NULL,
+    MEN_TEXTO TEXT NOT NULL,
+    MEN_DATA_ENVIO DATE,
+    FOREIGN KEY (MEN_ATE_CODIGO) REFERENCES atendentes(ATE_CODIGO),
+    FOREIGN KEY (MEN_TMS_CODIGO) REFERENCES tipo_mensagens(TMS_CODIGO)
+);
+
+INSERT INTO mensagens (MEN_ATE_CODIGO, MEN_TMS_CODIGO, MEN_TEXTO, MEN_DATA_ENVIO) VALUES
+(1, 1, 'Bem-vindo ao sistema!', '2023-09-24'),
+(2, 2, 'Alerta: Verifique suas informações.', '2023-09-23'),
+(3, 3, 'Erro: Falha ao processar a requisição.', '2023-09-22'),
+(4, 4, 'Sucesso: A operação foi realizada com sucesso.', '2023-09-21'),
+(5, 5, 'Notificação: Lembre-se da reunião amanhã.', '2023-09-20');
+
+-- -- -- -- -- -- COMANDOS BÁSICOS -- -- -- -- -- -- COMANDOS BÁSICOS -- -- -- -- -- -- COMANDOS BÁSICOS
+
+SELECT PRO_CODIGO, PRO_DESCRICAO, PRO_VALOR_UNIT * 1.15 FROM produtos;
+
+SELECT PRO_CODIGO, PRO_DESCRICAO, PRO_VALOR_UNIT * 1.15 REAJUSTE FROM produtos;
+
+SELECT CLI_ENDERECO FROM CLIENTES;
+
+SELECT DISTINCT CLI_ENDERECO FROM CLIENTES;
+
+SELECT CLI_NOME, CLI_ENDERECO, CLI_DATA_NASCIMENTO FROM clientes ORDER BY CLI_NOME DESC;
+
+SELECT PRO_DESCRICAO, PRO_QNT_DISPONIVEL, PRO_VALOR_UNIT FROM produtos WHERE PRO_CAT_CODIGO = '001';
+
+-- SELECT COUNT(*) FROM atendentes;
+-- SHOW TABLES;
+-- SELECT * FROM bdcurso.mensagens;
+
+-- Traga todos os codigos, nomes e endereços da tabela usuário
+select CLI_CODIGO, CLI_NOME, CLI_ENDERECO
+from clientes
+order by cli_nome desc;
+
+-- Consulta com código, nome e valor unitário
+select PRO_CODIGO, PRO_DESCRICAO, PRO_VALOR_UNIT
+from produtos;
+
+SELECT PRO_CODIGO, PRO_DESCRICAO, PRO_VALOR_UNIT * 1.15 FROM produtos;
+
+SELECT PRO_CODIGO, PRO_DESCRICAO, PRO_VALOR_UNIT * 1.15 REAJUSTE FROM produtos;
+
+select PRO_CODIGO CÓDIGO,
+	PRO_DESCRICAO "DESCRIÇÃO PRODUTO",
+    PRO_VALOR_UNIT "VALOR UNITÁRIO DO PRODUTO"
+from produtos;
+
+SELECT CLI_ENDERECO FROM CLIENTES;
+SELECT DISTINCT CLI_ENDERECO FROM CLIENTES;
+
+select distinct CLI_ENDERECO from clientes where CLI_ENDERECO is not null;
+
+-- Listar todos os produtos das categorias de código 1 e 2 ordenados pelo valor (do mais caro para o mais barato).
+
+-- Listar todos os fornecedores ordenados do mais antigo para o mais recente
+select * from fornecedores
+order by FOR_DATA_CADASTRO asc;
+
+-- Listar as vendas com valor total maior ou igual a 100
+select * from vendas
+where VEN_VALOR_TOTAL >= 100;
+
+-- 
+
+SELECT PRO_DESCRICAO, PRO_QTD_DISPONIVEL, PRO_VALOR_UNIT FROM produtos WHERE PRO_CAT_CODIGO = '001';
+
+SELECT PRO_DESCRICAO, PRO_QTD_DISPONIVEL, PRO_VALOR_UNIT
+FROM produtos
+WHERE PRO_VALOR_UNIT >= 50.00;
+
+SELECT FOR_CODIGO, FOR_NOME_FANTASIA
+FROM fornecedores
+WHERE FOR_CODIGO between '2' and '4';
+
+SELECT FOR_CODIGO, FOR_NOME_FANTASIA
+FROM fornecedores
+WHERE FOR_CODIGO in (1, 3, 5);
+
+SELECT MUN_NOME, MUN_UF_ESTADO
+FROM municipios
+WHERE MUN_NOME IN ('Rio Branco','Senador Guiomard','Epitaciolândia');
+
+SELECT CLI_CODIGO, CLI_NOME, CLI_SEXO
+FROM clientes
+WHERE CLI_NOME LIKE 'A%';
+
+SELECT ATE_CODIGO, ATE_NOME
+FROM atendentes
+WHERE ATE_NOME LIKE 'Juliana ____';
+
+SELECT * FROM produtos;
+SELECT * FROM hist_vendas;
+SELECT * FROM fornecedores;
+SELECT * FROM municipios;
+SELECT * FROM clientes;
+SELECT * FROM atendentes;
+
+alter table cliente;
+add column CLI_ENDERECO;
+
+-- CODIGO QUE PODE CAIR NA PROVA -- CODIGO QUE PODE CAIR NA PROVA --
+
+-- Retorne o somatório do valor unitário dos produtos de uma categoria específica
+select sum(PRO_VALOR_UNIT)
+from produtos
+where PRO_CAT_CODIGO = 5;
+
+-- Retorne a QUANTIDADE de produtos de uma categoria específica
+SELECT COUNT(*)
+WHERE PRO_CAT_CODIGO = 5;
+
+-- Retorne o valor médio dos produtos
+SELECT AVG(PRO_VALOR_UNIT)
+FROM produtos;
+
+-- Retorne a quantidade de produtos vendidos em uma determinada venda
+SELECT COUNT(*) TOTAL_PRODUTOS
+FROM hist_vendas
+WHERE HVE_VEN_CODIGO = 1;
+
+-- Retorne a quantidade total de itens vendidos em uma determinada venda
+SELECT sum(HVE_QNT_ITENS)
+FROM hist_vendas
+WHERE HVE_VEN_CODIGO = 1;
+
+-- Atividade SQL -- Atividade SQL -- Atividade SQL -- Atividade SQL -- Atividade SQL -- Atividade SQL --
+
+-- 	1) Liste os clientes (todos os dados, começando pelo nome) em ordem crescente de inclusão no sistema.
+SELECT CLI_NOME, CLI_DATA_NASCIMENTO, CLI_SEXO, CLI_CPF, CLI_RG, CLI_CNPJ, CLI_ENDERECO, CLI_EMAIL, CLI_DATA_CADASTRO, CLI_TIPO, CLI_STATUS, CLI_FONE, CLI_NOME_CONTATO
+FROM clientes
+ORDER BY CLI_DATA_CADASTRO;
+
+-- 2) Retorne todos os atendentes em ordem alfabética.
+SELECT *
+FROM atendentes
+ORDER BY ATE_NOME;
+
+-- 3) Retorne todos os bancos com código acima de 010.
+SELECT *
+FROM bancos
+WHERE BAN_CODIGO > 010;
+
+-- 4) Liste nome, data de nascimento, sexo, CPF, endereço e telefone dos clientes do sexo masculino.
+SELECT CLI_NOME, CLI_DATA_NASCIMENTO, CLI_SEXO, CLI_CPF, CLI_ENDERECO, CLI_FONE
+FROM clientes
+WHERE CLI_SEXO = 'M';
+
+-- 5) Liste os fornecedores que estão com o endereço em branco.
+INSERT INTO fornecedores (FOR_CODIGO, FOR_MUN_CODIGO, FOR_RAZAO_SOCIAL, FOR_NOME_FANTASIA, FOR_NOME_CONTATO, FOR_CNPJ, FOR_ENDERECO, FOR_FONE, FOR_EMAIL)
+VALUES (7, 1, 'Fornecedor F S/A','Fornecedor F','Marlos Almeida', '32145678000987', NULL, '(68) 91234-5678', 'fornecedorf@example.com');
+
+
+SELECT *
+FROM fornecedores
+WHERE FOR_ENDERECO is null;
+
+-- 6) Liste os produtos de código 1, 3 e 4 ordenados de maneira decrescente pela quantidade disponível.
+SELECT *
+FROM produtos
+WHERE PRO_CODIGO IN (1,3,4)
+ORDER BY PRO_QTD_DISPONIVEL DESC;
+
+-- 7) Informe a quantidade de categorias de produtos cadastrados.
+SELECT COUNT(*) AS PRO_CAT_CODIGO
+FROM produtos;
+
+-- 8) Informe a quantidade de categorias de produtos cadastradas, cuja descrição inicia com a letra “A”.
+select * from produtos;
+
+INSERT INTO produtos (PRO_FOR_CODIGO, PRO_CAT_CODIGO, PRO_DESCRICAO, PRO_QTD_DISPONIVEL, PRO_ULTIMA_AQUISICAO, PRO_VALOR_UNIT, PRO_FABRICANTE, PRO_DETALHES) VALUES
+(1, 1, 'Arma de brinquedo', 90, '2023-07-21', 99.99, 'Fabricante A', 'Arma para crianças');
+
+SELECT COUNT(*) AS PRO_CAT_CODIGO
+FROM produtos
+WHERE PRO_DESCRICAO LIKE 'A%';
+
+-- 9) Liste os atendentes que acessaram o sistema entre os dias X e Y.
+select * from atendentes;
+
+SELECT *
+FROM atendentes
+WHERE ATE_ULTIMO_ACESSO BETWEEN '2023-09-18' AND '2023-09-22';
+
+-- 10) Liste o nome do atendente e as mensagens enviadas por ele(a).
+SELECT *
+FROM mensagens;
+
+	SELECT atendentes.ATE_NOME, mensagens.MEN_TEXTO
+	FROM mensagens
+	JOIN atendentes ON mensagens.MEN_ATE_CODIGO = atendentes.ATE_CODIGO;
+    
+-- 11) Liste os produtos, com os respectivos nomes de fornecedores e categorias, cuja quantidade disponível é maior que 0. Ordene seu resultado de maneira decrescente pela quantidade disponível.
+SELECT * FROM produtos;
+SELECT * FROM fornecedores;
+SELECT * FROM categoria_produtos;
+SELECT * FROM hist_vendas;
+
+
+SELECT FOR_NOME_FANTASIA, PRO_CAT_CODIGO
+FROM fornecedores, produtos
+WHERE PRO_QTD_DISPONIVEL > 0
+ORDER BY PRO_QTD_DISPONIVEL DESC;
